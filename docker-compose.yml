@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    entrypoint: sh ./.docker/entrypoint.sh
+    container_name: api-tallosflix
+    ports:
+      - 4000:4000
+    volumes:
+      - ./:/home/app/api-tallosflix
+    tty: true
+    networks:
+      - tallosflix-network
+
+  db:
+    image: mongo:4.4
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - /mongodb/dbdata:/data/db
+      - /mongodb/configdb:/data/configdb
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    environment:
+      MONGO_INITDB_DATABASE: $MONGO_DB_CONNECT
+    networks:
+      - tallosflix-network
+
+networks:
+  tallosflix-network:
+    driver: bridge
